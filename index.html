@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .rainbow-gradient {
+      background: linear-gradient(45deg, #F59E0B, #84CC16, #10B981, #3B82F6, #8B5CF6, #F59E0B);
+      background-size: 1000% 1000%;
+      -webkit-animation: rainbow-animation 12s ease infinite;
+      -moz-animation: rainbow-animation 12s ease infinite;
+      animation: rainbow-animation 12s ease infinite;
+    }
+    
+    @-webkit-keyframes rainbow-animation {
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+    }
+    
+    @-moz-keyframes rainbow-animation {
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+    }
+    
+    @keyframes rainbow-animation {
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 min-h-screen flex items-center justify-center">
+  <form class="bg-white rounded-lg shadow-lg p-8 w-96 mx-auto rainbow-gradient" id="contact-form" method="POST" data-netlify="true">
+    <div class="mb-4">
+      <input type="text" name="contact-name" id="contact-name" placeholder="Your Name" required class="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600">
+    </div>
+    <div class="mb-4">
+      <input type="text" name="contact-phone" id="contact-phone" placeholder="Phone Number" required class="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600">
+    </div>
+    <div class="mb-4">
+      <input type="email" id="contact-email" name="contact-email" placeholder="Your Email" required class="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600">
+    </div>
+    <div class="mb-4">
+      <input type="text" id="subject" name="subject" placeholder="Your Class and Sec" class="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600">
+    </div>
+    <div class="mb-4">
+      <textarea name="contact-message" id="contact-message" placeholder="Your Message" required class="border border-gray-300 p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-600"></textarea>
+    </div>
+    <div class="mb-4">
+      <button name="submit" type="submit" id="submit" class="btn-default btn-large rainbow-btn bg-purple-600 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600">
+        <span>Submit Now</span>
+      </button>
+      <div id="success-message" style="display: none;">
+        <p class="text-gray-700">Thank you for contacting us! We will get back to you soon.</p>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    function sendMessageToTelegram(message) {
+      const botToken = "YOUR_TELEGRAM_BOT_TOKEN";
+      const chatId = "YOUR_TELEGRAM_CHAT_ID";
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+      const payload = {
+        chat_id: chatId,
+        text: message,
+      };
+    
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.ok) {
+            console.log("Message sent successfully");
+          } else {
+            console.error("Failed to send message:", data.description);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+    
+    const form = document.getElementById("contact-form");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+    
+      const nameInput = document.getElementById("contact-name");
+      const phoneInput = document.getElementById("contact-phone");
+      const emailInput = document.getElementById("contact-email");
+      const subjectInput = document.getElementById("subject");
+      const messageInput = document.getElementById("contact-message");
+    
+      const name = nameInput.value;
+      const phone = phoneInput.value;
+      const email = emailInput.value;
+      const subject = subjectInput.value;
+      const message = messageInput.value;
+    
+      // Edit the message to be sent to Telegram as per your need
+      const telegramMessage = `
+        New Message from Contact:
+        Name: ${name}
+        Phone: ${phone}
+        Email: ${email}
+        Subject: ${subject}
+        Message: ${message}
+      `;
+    
+      // Send message to Telegram
+      sendMessageToTelegram(telegramMessage);
+    
+      // Show the success message
+      const successMessage = document.getElementById("success-message");
+      successMessage.style.display = "block";
+    
+      // Clear the form inputs
+      form.reset();
+    });
+  </script>
+</body>
+</html>
